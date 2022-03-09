@@ -38,5 +38,5 @@ else
   printenv
 fi
 
-python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot 2048-2048-2048-2048-2048-2048-2048-128 --arch-sparse-feature-size 128 --arch-mlp-top 1024-1024-1024-1024-1 --arch-interaction-op cat  --arch-embedding-size 10000000-10000000-10000000-10000000-10000000-10000000-10000000-10000000-10000000-10000000-10000000-10000000 --mini-batch-size 1536 --nepochs 5 --num-batches 16384 --use-gpu --print-time
+python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot 2048-2048-2048-2048-2048-2048-2048-128 --arch-sparse-feature-size 128 --arch-mlp-top 1024-1024-1024-1024-1 --arch-interaction-op cat  --arch-embedding-size 10000000-10000000-10000000-10000000-10000000-10000000-10000000-10000000-10000000-10000000-10000000-10000000 --mini-batch-size 6144 --nepochs 5 --num-batches 16384 --use-gpu --print-time
 
