@@ -24,8 +24,8 @@ export NCCL_IB_GID_INDEX=3
 export NCCL_IB_HCA="qedr0,qedr1,qedr2,qedr3"
 export LD_LIBRARY_PATH="/home/frankwwy/mccl/build/lib:"
 export LD_PRELOAD="/home/frankwwy/mccl/build/lib/libnccl.so:"
-export NCCL_MIN_NCHANNELS=2
-export NCCL_MAX_NCHANNELS=2
+export NCCL_MIN_NCHANNELS=4
+export NCCL_MAX_NCHANNELS=4
 export NCCL_ALGO=Ring
 
 eval "$($HOME/miniconda/bin/conda shell.bash hook)"
