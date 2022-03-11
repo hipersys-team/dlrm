@@ -48,7 +48,7 @@ for l_batch_sz in "${l_batch_szs[@]}"; do
     printenv
     python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op dot --arch-embedding-size ${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz} --mini-batch-size $(( 12 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing $prof > result_${runname}_${l_batch_sz}.res
   fi
-  sleep 100
+  sleep 450
 done
 
 
