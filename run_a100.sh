@@ -28,21 +28,27 @@ export NCCL_MIN_NCHANNELS=4
 export NCCL_MAX_NCHANNELS=4
 export NCCL_ALGO=Ring
 
+runname=small
 embedding_dim=4096
 mlp_bot=4096-4096-4096-$embedding_dim
 mlp_top=1024-1024-1024-1024-1
 embedding_sz=1000000
-l_batch_sz=512
+prof=""
+declare -a l_batch_szs=(16 32 64 128 256 512 1024)
 
 eval "$($HOME/miniconda/bin/conda shell.bash hook)"
 conda init
 conda activate torch
 
-if [[ $RANK != 0 ]]; then
-  sleep 5
-else
-  printenv
-fi
+for l_batch_sz in "${l_batch_szs[@]}"; do
+  if [[ $RANK != 0 ]]; then
+    sleep 5
+    python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op dot --arch-embedding-size ${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz} --mini-batch-size $(( 12 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing $prof
+  else
+    printenv
+    python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op dot --arch-embedding-size ${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz} --mini-batch-size $(( 12 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing $prof > result_${runname}_${l_batch_sz}.res
+  fi
+  sleep 100
+done
 
-python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op dot --arch-embedding-size ${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz} --mini-batch-size $(( 12 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing --enable-profiling
 
