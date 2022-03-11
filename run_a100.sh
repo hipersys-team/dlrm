@@ -32,7 +32,7 @@ embedding_dim=4096
 mlp_bot=4096-4096-4096-$embedding_dim
 mlp_top=1024-1024-1024-1024-1
 embedding_sz=1000000
-l_batch_sz=64
+l_batch_sz=512
 
 eval "$($HOME/miniconda/bin/conda shell.bash hook)"
 conda init
