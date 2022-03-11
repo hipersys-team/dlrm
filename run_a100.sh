@@ -28,6 +28,12 @@ export NCCL_MIN_NCHANNELS=4
 export NCCL_MAX_NCHANNELS=4
 export NCCL_ALGO=Ring
 
+embedding_dim=4096
+mlp_bot=4096-4096-4096-$embedding_dim
+mlp_top=1024-1024-1024-1024-1
+embedding_sz=1000000
+l_batch_sz=64
+
 eval "$($HOME/miniconda/bin/conda shell.bash hook)"
 conda init
 conda activate torch
@@ -38,5 +44,5 @@ else
   printenv
 fi
 
-python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot 4096-4096-4096-4096-4096 --arch-sparse-feature-size 4096 --arch-mlp-top 1024-1024-1 --arch-interaction-op dot --arch-embedding-size 1000000-1000000-1000000-1000000-1000000-1000000-1000000-1000000-1000000-1000000-1000000-1000000 --mini-batch-size $(( 12 * 64 )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing --enable-profiling
+python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op dot --arch-embedding-size ${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz} --mini-batch-size $(( 12 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing --enable-profiling
 
