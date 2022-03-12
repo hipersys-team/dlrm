@@ -28,13 +28,13 @@ export NCCL_MIN_NCHANNELS=4
 export NCCL_MAX_NCHANNELS=4
 export NCCL_ALGO=Ring
 
-runname=big
+runname=stupid
 embedding_dim=32768
 mlp_bot=2048-2048-2048-2048-2048-2048-2048-$embedding_dim
 mlp_top=1024-1024-1024-1024-1
 embedding_sz=100000
 prof=""
-declare -a l_batch_szs=(16)
+declare -a l_batch_szs=(16 32 64 128 256 512 1024)
 
 eval "$($HOME/miniconda/bin/conda shell.bash hook)"
 conda init
@@ -46,7 +46,7 @@ for l_batch_sz in "${l_batch_szs[@]}"; do
     python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op dot --arch-embedding-size ${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz} --mini-batch-size $(( 12 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing $prof > /dev/null 2>&1
   else
     printenv
-    python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op dot --arch-embedding-size ${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz} --mini-batch-size $(( 12 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing $prof # > result_${runname}_${l_batch_sz}.res
+    python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op dot --arch-embedding-size ${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz} --mini-batch-size $(( 12 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing $prof > result_${runname}_${l_batch_sz}.res
   fi
   sleep 450
 done
