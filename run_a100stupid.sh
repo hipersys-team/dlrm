@@ -34,7 +34,7 @@ mlp_bot=2048-2048-2048-2048-2048-2048-2048-$embedding_dim
 mlp_top=1024-1024-1024-1024-1
 embedding_sz=100000
 prof=""
-declare -a l_batch_szs=(16 32 64 128 256 512 1024)
+declare -a l_batch_szs=(1024)
 
 eval "$($HOME/miniconda/bin/conda shell.bash hook)"
 conda init
