@@ -21,7 +21,8 @@ export MASTER_ADDR="abtin.csail.mit.edu"
 
 export NCCL_NET="IB"
 export NCCL_IB_GID_INDEX=3
-export NCCL_IB_HCA="qedr0,qedr1,qedr2,qedr3"
+#export NCCL_IB_HCA="qedr0,qedr1,qedr2,qedr3"
+export NCCL_IB_HCA="mlx5_0"
 export LD_LIBRARY_PATH="/home/frankwwy/nccl/build/lib:"
 export LD_PRELOAD="/home/frankwwy/nccl/build/lib/libnccl.so:"
 export NCCL_MIN_NCHANNELS=4
