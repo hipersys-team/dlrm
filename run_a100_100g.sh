@@ -29,7 +29,7 @@ export NCCL_MIN_NCHANNELS=4
 export NCCL_MAX_NCHANNELS=4
 export NCCL_ALGO=Ring
 
-runname=smallft25
+runname=smallft100
 embedding_dim=4096
 mlp_bot=4096-4096-4096-$embedding_dim
 mlp_top=1024-1024-1024-1024-1
@@ -54,7 +54,7 @@ for l_batch_sz in "${l_batch_szs[@]}"; do
   sleep 100
 done
 
-runname=bigft25
+runname=bigft100
 embedding_dim=4096
 mlp_bot=4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-$embedding_dim
 mlp_top=2048-2048-2048-2048-2048-2048-2048-2048-1
@@ -74,7 +74,7 @@ for l_batch_sz in "${l_batch_szs[@]}"; do
   sleep 100
 done
 
-runname=stupidft25
+runname=stupidft100
 embedding_dim=32768
 mlp_bot=2048-2048-2048-2048-2048-2048-2048-$embedding_dim
 mlp_top=1024-1024-1024-1024-1
