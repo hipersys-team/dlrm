@@ -415,7 +415,7 @@ class All2All_Req(Function):
                     * a2a_info.emb_dim
                 ]
             )
-            print(f"All2All_Req: total size: {output.nelement()}")
+            print(f"All2All_Req: total size: {output.nelement()}, type: {output.type()}")
             req = dist.all_to_all_single(
                 output, input, table_split_lengths, batch_split_lengths, async_op=True
             )
