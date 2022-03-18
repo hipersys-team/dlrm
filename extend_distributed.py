@@ -230,6 +230,7 @@ class All2All_ScatterList_Req(Function):
                     if i == my_rank
                     else []
                 )
+                print(f"All2All_ScatterList_Req: scatter size: {out_tensor.nelement()}")
                 req = dist.scatter(out_tensor, scatter_list, src=i, async_op=True)
                 gather_list.append(out_tensor)
                 req_list.append(req)
@@ -288,6 +289,7 @@ class All2All_ScatterList_Wait(Function):
                     if i == my_rank
                     else None
                 )
+                print(f"All2All_ScatterList_Wait: gather size: {grad_output[ind].nelement()}")
                 req = dist.gather(grad_output[ind], gather_list, dst=i, async_op=True)
                 req_list.append(req)
                 ind += 1
@@ -318,6 +320,7 @@ class All2All_Scatter_Req(Function):
             out_tensor = input.new_empty(
                 [a2a_info.local_batch_num, table_split_lengths[i] * a2a_info.emb_dim]
             )
+            print(f"All2All_Scatter_Req: scatter size: {out_tensor.nelement()}")
             req = dist.scatter(
                 out_tensor, scatter_list if i == my_rank else [], src=i, async_op=True
             )
@@ -374,6 +377,7 @@ class All2All_Scatter_Wait(Function):
         gather_list = list(grad_input.split(batch_split_lengths, dim=0))
         req_list = []
         for i in range(my_size):
+            print(f"All2All_Scatter_Wait: scatter size: {scatter_list[i].nelement()}")
             req = dist.gather(
                 scatter_list[i],
                 gather_list if i == my_rank else [],
@@ -411,6 +415,7 @@ class All2All_Req(Function):
                     * a2a_info.emb_dim
                 ]
             )
+            print(f"All2All_Req: total size: {output.nelement()}")
             req = dist.all_to_all_single(
                 output, input, table_split_lengths, batch_split_lengths, async_op=True
             )
@@ -474,6 +479,7 @@ class All2All_Wait(Function):
             grad_input = grad_output.new_empty(
                 [a2a_info.batch_size * a2a_info.local_table_num * a2a_info.emb_dim]
             )
+            print(f"All2All_Wait: total size: {grad_input.nelement()}")
             req = dist.all_to_all_single(
                 grad_input,
                 grad_output,
@@ -515,6 +521,7 @@ class AllGather(Function):
                 output_size[dim] = length
                 gather_list.append(input.new_empty(output_size))
 
+        print(f"AllGather: total size: {input.nelement()}")
         dist.all_gather(gather_list, input)
 
         if dim != 0:
