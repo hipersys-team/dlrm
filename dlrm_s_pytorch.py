@@ -88,6 +88,7 @@ from torch.nn.parallel.replicate import replicate
 from torch.nn.parallel.scatter_gather import gather, scatter
 from torch.nn.parameter import Parameter
 from torch.optim.lr_scheduler import _LRScheduler
+from torchsummary import summary
 import optim.rwsadagrad as RowWiseSparseAdagrad
 from torch.utils.tensorboard import SummaryWriter
 
@@ -1306,7 +1307,9 @@ def run():
         if use_gpu:
             device_ids = [ext_dist.my_local_rank]
             dlrm.bot_l = ext_dist.DDP(dlrm.bot_l, device_ids=device_ids)
+            print(summary(dlrm.bot_l))
             dlrm.top_l = ext_dist.DDP(dlrm.top_l, device_ids=device_ids)
+            print(summary(dlrm.top_l))
         else:
             dlrm.bot_l = ext_dist.DDP(dlrm.bot_l)
             dlrm.top_l = ext_dist.DDP(dlrm.top_l)
