@@ -28,7 +28,7 @@ export LD_LIBRARY_PATH="/home/frankwwy/nccl/build/lib:"
 export LD_PRELOAD="/home/frankwwy/nccl/build/lib/libnccl.so:"
 
 runname=big
-embedding_dim=8192
+embedding_dim=4096
 mlp_bot=8192-8192-8192-8192-8192-8192-8192-8192-8192-8192-8192-8192-8192-8192-8192-$embedding_dim
 mlp_top=4096-4096-4096-4096-4096-4096-4096-4096-1
 embedding_sz=1000000
