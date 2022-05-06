@@ -9,7 +9,7 @@ ord() {
   LC_CTYPE=C printf '%d' "'$1"
 }
 
-export WORLD_SIZE=12
+export WORLD_SIZE=2
 export RANK=$(( $(ord $(echo ${HOSTNAME:0:1})) - $(ord a) ))
 
 export MASTER_PORT=27182
@@ -25,9 +25,6 @@ export NCCL_IB_HCA="mlx5_0"
 #export NCCL_IB_HCA="qedr0,qedr1,qedr2,qedr3"
 export LD_LIBRARY_PATH="/home/frankwwy/nccl/build/lib:"
 export LD_PRELOAD="/home/frankwwy/nccl/build/lib/libnccl.so:"
-export NCCL_MIN_NCHANNELS=4
-export NCCL_MAX_NCHANNELS=4
-export NCCL_ALGO=Ring
 
 runname=big
 embedding_dim=4096
@@ -35,7 +32,7 @@ mlp_bot=4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-40
 mlp_top=2048-2048-2048-2048-2048-2048-2048-2048-1
 embedding_sz=1000000
 prof=""
-declare -a l_batch_szs=(16 32 64 128 256 512 1024)
+declare -a l_batch_szs=(256)
 
 eval "$($HOME/miniconda/bin/conda shell.bash hook)"
 conda init
@@ -44,14 +41,13 @@ conda activate torch
 for l_batch_sz in "${l_batch_szs[@]}"; do
   if [[ $RANK != 0 ]]; then
     sleep 5
-    python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op cat --arch-embedding-size ${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz} --mini-batch-size $(( 12 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing $prof > /dev/null 2>&1
+    python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op cat --arch-embedding-size ${embedding_sz}-${embedding_sz} --mini-batch-size $(( 2 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing $prof > /dev/null 2>&1
   else
     printenv
-    python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op cat --arch-embedding-size ${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz}-${embedding_sz} --mini-batch-size $(( 12 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing $prof > result_${runname}_${l_batch_sz}.res
+    python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op cat --arch-embedding-size ${embedding_sz}-${embedding_sz} --mini-batch-size $(( 2 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing $prof > result_${runname}_${l_batch_sz}.res
   fi
-  sleep 300
+  sleep 20
   killall ssh
-  sleep 100
 done
 
 
