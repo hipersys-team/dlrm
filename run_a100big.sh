@@ -10,7 +10,8 @@ ord() {
 }
 
 export WORLD_SIZE=2
-export RANK=$(( $(ord $(echo ${HOSTNAME:0:1})) - $(ord a) ))
+export RANK=0 # 0 for master, 1 for worker
+# $(( $(ord $(echo ${HOSTNAME:0:1})) - $(ord a) ))
 
 export MASTER_PORT=27182
 export MASTER_ADDR="abtin.csail.mit.edu"
@@ -27,9 +28,9 @@ export LD_LIBRARY_PATH="/home/frankwwy/nccl/build/lib:"
 export LD_PRELOAD="/home/frankwwy/nccl/build/lib/libnccl.so:"
 
 runname=big
-embedding_dim=4096
-mlp_bot=4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-4096-$embedding_dim
-mlp_top=2048-2048-2048-2048-2048-2048-2048-2048-1
+embedding_dim=8192
+mlp_bot=8192-8192-8192-8192-8192-8192-8192-8192-8192-8192-8192-8192-8192-8192-8192-$embedding_dim
+mlp_top=4096-4096-4096-4096-4096-4096-4096-4096-1
 embedding_sz=1000000
 prof=""
 declare -a l_batch_szs=(256)
@@ -41,10 +42,10 @@ conda activate torch
 for l_batch_sz in "${l_batch_szs[@]}"; do
   if [[ $RANK != 0 ]]; then
     sleep 5
-    python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op cat --arch-embedding-size ${embedding_sz}-${embedding_sz} --mini-batch-size $(( 2 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing $prof > /dev/null 2>&1
+    python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op dot --arch-embedding-size ${embedding_sz}-${embedding_sz} --mini-batch-size $(( 2 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing $prof
   else
     printenv
-    python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op cat --arch-embedding-size ${embedding_sz}-${embedding_sz} --mini-batch-size $(( 2 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing $prof > result_${runname}_${l_batch_sz}.res
+    python3 dlrm_s_pytorch.py --dist-backend="nccl" --arch-mlp-bot $mlp_bot --arch-sparse-feature-size $embedding_dim --arch-mlp-top $mlp_top --arch-interaction-op dot --arch-embedding-size ${embedding_sz}-${embedding_sz} --mini-batch-size $(( 2 * $l_batch_sz )) --nepochs 5 --num-batches 64 --use-gpu --print-time --dataset-multiprocessing $prof > result_${runname}_${l_batch_sz}.res
   fi
   sleep 20
   killall ssh
