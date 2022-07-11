@@ -29,7 +29,7 @@ export NCCL_MIN_NCHANNELS=4
 export NCCL_MAX_NCHANNELS=4
 export NCCL_ALGO=Ring
 
-runname=stupidft
+runname=paper
 embedding_dim=32768
 mlp_bot=2048-2048-2048-2048-2048-2048-2048-$embedding_dim
 mlp_top=1024-1024-1024-1024-1
